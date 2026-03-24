@@ -6,3 +6,5 @@ dist/
 .turbo/
 *.tsbuildinfo
 coverage/
+.claude/settings.local.json
+**/.agentpass-sessions/

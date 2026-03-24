@@ -1,0 +1,10 @@
+export { BrowserPool, pool } from "./pool.js";
+export { humanNavigation, humanType, humanClick, humanScroll, dismissModals } from "./behavior.js";
+export { NetworkInterceptor } from "./interceptor.js";
+export type { CapturedResponse } from "./interceptor.js";
+export { selectorRegistry } from "./selectors.js";
+export { STEALTH_SCRIPT, CHROME_USER_AGENT } from "./stealth.js";
+export { loadSession, saveSession, clearSession, hasSession, domainFromUrl } from "./sessions.js";
+export type { SessionMeta } from "./sessions.js";
+export { detectCaptcha, solveCaptcha, injectCaptchaToken, handleCaptcha } from "./captcha.js";
+export type { CaptchaType, CaptchaDetection, CaptchaSolveResult } from "./captcha.js";

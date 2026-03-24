@@ -1,0 +1,51 @@
+{
+  "name": "@agentpass/middleware",
+  "version": "0.0.1",
+  "description": "AgentPass server-side middleware — verify agent passports and grant clean access without CAPTCHAs",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./express": {
+      "import": "./dist/express.js",
+      "types": "./dist/express.d.ts"
+    },
+    "./fastify": {
+      "import": "./dist/fastify.js",
+      "types": "./dist/fastify.d.ts"
+    },
+    "./nextjs": {
+      "import": "./dist/nextjs.js",
+      "types": "./dist/nextjs.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agentpass/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0",
+    "fastify": ">=4.0.0",
+    "next": ">=13.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": { "optional": true },
+    "fastify": { "optional": true },
+    "next": { "optional": true }
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "@types/express": "^5.0.0",
+    "vitest": "^2.1.8"
+  },
+  "keywords": ["agentpass", "middleware", "ai-agents", "captcha-bypass", "identity"]
+}

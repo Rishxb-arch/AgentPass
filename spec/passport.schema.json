@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentpass.dev/schemas/passport.json",
+  "title": "AgentPassport",
+  "description": "A cryptographically signed identity document for an AI agent",
+  "type": "object",
+  "required": [
+    "agentId",
+    "principalId",
+    "name",
+    "tier",
+    "capabilities",
+    "fingerprint",
+    "issuedAt",
+    "expiresAt",
+    "active",
+    "signature"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "agentId": {
+      "type": "string",
+      "description": "Globally unique agent identifier. Format: ap_{sha256(principalId + randomHex(8)).slice(0,32)}",
+      "pattern": "^ap_[0-9a-f]{32}$",
+      "examples": ["ap_a3f8b2c1d9e4f501a2b3c4d5e6f70891"]
+    },
+    "principalId": {
+      "type": "string",
+      "description": "The human or organization that owns and authorizes this agent. Must be non-empty and non-anonymous.",
+      "minLength": 1,
+      "examples": ["user_acme_123", "org_enterprise_456"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable display name for the agent",
+      "minLength": 1,
+      "maxLength": 256,
+      "examples": ["Acme Commerce Agent", "Research Bot v2"]
+    },
+    "tier": {
+      "type": "string",
+      "description": "Trust tier of the agent. Higher tiers unlock more capabilities and bypass more verification checks.",
+      "enum": ["basic", "verified", "trusted", "sovereign"],
+      "examples": ["verified"]
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "List of capabilities this agent is authorized to exercise. Sorted alphabetically for deterministic fingerprinting.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "web:read",
+          "web:navigate",
+          "web:submit_form",
+          "web:screenshot",
+          "commerce:browse",
+          "commerce:cart",
+          "commerce:purchase",
+          "commerce:order_history",
+          "data:read",
+          "data:write",
+          "data:export",
+          "identity:basic",
+          "identity:delegate",
+          "identity:impersonate",
+          "api:read",
+          "api:write",
+          "api:admin",
+          "media:read",
+          "media:generate",
+          "compute:execute"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "examples": [
+        ["commerce:browse", "commerce:cart", "web:navigate", "web:read"]
+      ]
+    },
+    "fingerprint": {
+      "type": "string",
+      "description": "16-char hex fingerprint derived from sha256(name + sortedCapabilities.join(',') + tier)",
+      "pattern": "^[0-9a-f]{16}$",
+      "examples": ["a3f8b2c1d9e4f501"]
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this passport was issued",
+      "examples": ["2026-03-17T00:00:00.000Z"]
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this passport expires. Must be after issuedAt.",
+      "examples": ["2027-03-17T00:00:00.000Z"]
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether this passport is currently active. Set to false when revoked.",
+      "examples": [true]
+    },
+    "trustCredentials": {
+      "type": "object",
+      "description": "Optional cached KYA trust credentials. Not included in signature computation.",
+      "properties": {
+        "agentId": { "type": "string" },
+        "kyaScore": { "type": "number", "minimum": 0, "maximum": 100 },
+        "tier": { "type": "string" },
+        "principalId": { "type": "string" },
+        "capabilitiesHash": { "type": "string" },
+        "version": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "headerSignature": { "type": "string" }
+      }
+    },
+    "signature": {
+      "type": "string",
+      "description": "HMAC-SHA256 hex signature over canonical JSON payload (all fields except trustCredentials and signature, keys sorted alphabetically)",
+      "pattern": "^[0-9a-f]{64}$",
+      "examples": ["a3f8b2c1d9e4f501a2b3c4d5e6f708910123456789abcdef0123456789abcdef01"]
+    }
+  },
+  "definitions": {
+    "serializedToken": {
+      "type": "string",
+      "description": "Wire format: agentpass.{base64url(json)}.{signature.slice(0,16)}",
+      "pattern": "^agentpass\\.[A-Za-z0-9_-]+\\.[0-9a-f]{12,16}$",
+      "examples": ["agentpass.eyJhZ2VudElkIjoiYXBfYTNmOGIyYzFkOWU0ZjUwMWEyYjNjNGQ1ZTZmNzA4OTEifQ.a3f8b2c1d9e4"]
+    }
+  }
+}

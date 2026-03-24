@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentpass.dev/schemas/delegation.json",
+  "title": "DelegationToken",
+  "description": "A scoped, time-limited authorization token issued by a passport holder to a sub-agent. The scope can never exceed the grantor's own capabilities (scope reduction rule).",
+  "type": "object",
+  "required": [
+    "tokenId",
+    "agentId",
+    "granteeId",
+    "scope",
+    "usageCount",
+    "active",
+    "singleUse",
+    "issuedAt",
+    "expiresAt",
+    "signature"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "tokenId": {
+      "type": "string",
+      "description": "Unique delegation token identifier. Format: del_{randomHex(16)}",
+      "pattern": "^del_[0-9a-f]{8,16}$",
+      "examples": ["del_a1b2c3d4e5f60718"]
+    },
+    "agentId": {
+      "type": "string",
+      "description": "Agent ID of the grantor — the passport holder issuing this delegation",
+      "pattern": "^ap_[0-9a-f]{32}$",
+      "examples": ["ap_a3f8b2c1d9e4f501a2b3c4d5e6f70891"]
+    },
+    "granteeId": {
+      "type": "string",
+      "description": "Agent ID of the grantee — the sub-agent receiving delegated authority",
+      "pattern": "^ap_[0-9a-f]{32}$",
+      "examples": ["ap_f7e6d5c4b3a2019887766554433221100"]
+    },
+    "scope": {
+      "type": "object",
+      "description": "The authorized scope for this delegation. Always a subset of the grantor's capabilities.",
+      "required": ["capabilities", "systems"],
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "type": "array",
+          "description": "Capabilities delegated to the grantee. Must be a subset of grantor's capabilities.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "web:read", "web:navigate", "web:submit_form", "web:screenshot",
+              "commerce:browse", "commerce:cart", "commerce:purchase", "commerce:order_history",
+              "data:read", "data:write", "data:export",
+              "identity:basic", "identity:delegate", "identity:impersonate",
+              "api:read", "api:write", "api:admin",
+              "media:read", "media:generate", "compute:execute"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1,
+          "examples": [["web:read", "commerce:browse"]]
+        },
+        "systems": {
+          "type": "array",
+          "description": "List of allowed system URLs or patterns. Use '*' for all systems. Supports glob-style prefix matching (e.g. '*.example.com').",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "examples": [["shop.acme.com", "api.acme.com"], ["*"], ["*.example.com"]]
+        },
+        "maxActions": {
+          "type": "integer",
+          "description": "Maximum number of actions the grantee can perform before this token is exhausted. Omit for unlimited.",
+          "minimum": 1,
+          "examples": [100, 1, 500]
+        },
+        "allowedHours": {
+          "type": "array",
+          "description": "Optional time window restriction. Array of UTC hours (0–23) during which this token is valid.",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "minItems": 1,
+          "maxItems": 24,
+          "examples": [[9, 10, 11, 12, 13, 14, 15, 16, 17]]
+        }
+      }
+    },
+    "usageCount": {
+      "type": "integer",
+      "description": "Number of times this token has been consumed via consumeDelegation()",
+      "minimum": 0,
+      "default": 0
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether this token is currently active. Set to false when revoked or single-use token is consumed.",
+      "examples": [true]
+    },
+    "singleUse": {
+      "type": "boolean",
+      "description": "If true, this token is automatically deactivated after first use.",
+      "default": false,
+      "examples": [false]
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this token was issued",
+      "examples": ["2026-03-17T00:00:00.000Z"]
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this token expires",
+      "examples": ["2026-03-18T00:00:00.000Z"]
+    },
+    "signature": {
+      "type": "string",
+      "description": "HMAC-SHA256 hex signature over canonical JSON payload (all fields except signature, keys sorted alphabetically)",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "definitions": {
+    "serializedToken": {
+      "type": "string",
+      "description": "Wire format: del.{base64url(json)}.{signature.slice(0,16)}",
+      "pattern": "^del\\.[A-Za-z0-9_-]+\\.[0-9a-f]{12,16}$",
+      "examples": ["del.eyJ0b2tlbklkIjoiZGVsX2ExYjJjM2Q0In0.a1b2c3d4e5f6"]
+    },
+    "scopeReductionRule": {
+      "description": "Delegation cannot grant capabilities the grantor does not hold. If grantorCapabilities is provided to issueDelegation(), requested capabilities are automatically filtered to the intersection.",
+      "type": "object",
+      "properties": {
+        "grantorCapabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The full set of capabilities held by the grantor. Used to enforce scope reduction."
+        },
+        "requestedCapabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The capabilities the caller wants to delegate."
+        },
+        "grantedCapabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The actual capabilities granted: intersection of requested and grantor capabilities."
+        }
+      }
+    }
+  }
+}

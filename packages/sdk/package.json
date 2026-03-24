@@ -1,0 +1,28 @@
+{
+  "name": "@agentpass/sdk",
+  "version": "0.0.1",
+  "description": "AgentPass developer SDK — the hero API for AI agent web access",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agentpass/core": "workspace:*",
+    "@agentpass/adapters": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "vitest": "^2.1.8"
+  }
+}

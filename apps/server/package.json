@@ -1,0 +1,26 @@
+{
+  "name": "@agentpass/server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "install-browsers": "playwright install chromium"
+  },
+  "dependencies": {
+    "@agentpass/core": "workspace:*",
+    "@agentpass/runtime": "workspace:*",
+    "@agentpass/db": "workspace:*",
+    "fastify": "^4.28.1",
+    "@fastify/cors": "^9.0.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "playwright": "^1.48.2"
+  }
+}

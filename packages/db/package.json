@@ -1,0 +1,30 @@
+{
+  "name": "@agentpass/db",
+  "version": "0.0.1",
+  "description": "AgentPass Postgres persistence layer — Drizzle ORM schema, client, and repositories",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && cp -r src/migrations dist/migrations",
+    "type-check": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@agentpass/core": "workspace:*",
+    "drizzle-orm": "^0.38.0",
+    "postgres": "^3.4.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.0",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2"
+  }
+}

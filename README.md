@@ -401,4 +401,4 @@ pnpm test --coverage
 
 ## License
 
-MIT © [rishab1706](https://github.com/rishab1706)
+MIT © [Rishxb-arch](https://github.com/Rishxb-arch)

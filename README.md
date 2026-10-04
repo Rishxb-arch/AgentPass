@@ -119,7 +119,7 @@ Agent-pass/
 ### Install & Build
 
 ```bash
-git clone https://github.com/rishab1706/AgentPass.git
+git clone https://github.com/Rishxb-arch/AgentPass.git
 cd AgentPass
 pnpm install
 pnpm build
